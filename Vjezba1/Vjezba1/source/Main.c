@@ -43,11 +43,10 @@ int citac(char* Popis) {
 
 	dat = fopen(Popis, "r");
 
-	if (!dat) {																				//provjera prisutnosti datoteke
+	if (!dat) {
 
 		printf("Greska! Datoteka nije pronadjena!\n");
 		return -1;
-
 	}
 
 	while (!feof(dat)) {
@@ -56,7 +55,6 @@ int citac(char* Popis) {
 	}
 
 	fclose(dat);
-
 	return brojac;
 }
 
@@ -70,19 +68,17 @@ stud* aloc(int brStud, char* Popis) {
 	student = (stud*)malloc(brStud * sizeof(stud));
 
 	dat = fopen(Popis, "r");
-	if (!dat) {																				//provjera mogucnosti alokacije memorije
+	if (!dat) {
 		printf("Greska! Memoriju nije moguce alocirati!\n");
 		free(student);
 		return NULL;
 	}
 
-	while (!feof(dat)) {																	//citanje datoteke
+	while (!feof(dat)) {
 		fscanf(dat, " %s %s %d", student[br].ime, student[br].prezime, &student[br].bodovi);
 		br++;
 	}
-
 	fclose(dat);
-
 	return student;
 }
 
@@ -91,17 +87,16 @@ int ispis(int brStud, stud* student, int najv) {
 	int br = 0;
 	float rel = 0.0f;
 
-	printf(" IME \t\t PREZIME \t\t BODOVI \tRELATIVNO \n");
-	printf("________________________________________________________________\n");
-
+	printf("| IME          || PREZIME          || BODOVI          || RELATIVNO    | \n");
+	printf("----------------------------------------------------------------------------\n");
+	
 	for (br = 0; br < brStud; br++) {
 
 		rel = ((float)student[br].bodovi / najv) * 100.00f;
 
-		printf("%s \t\t %s \t\t %d \t\t %.2f \n", student[br].ime, student[br].prezime, student[br].bodovi, rel);
-
+		printf("|%-14s||%-18s|| %-16d|| %-12.2f |\n", student[br].ime, student[br].prezime, student[br].bodovi, rel);
+		
 	}
-
 	return 0;
 
 }
@@ -115,6 +110,5 @@ int naj(int brStud, stud* student) {
 		if (student[br].bodovi > najv)
 			najv = student[br].bodovi;
 	}
-
 	return najv;
 }
