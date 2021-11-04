@@ -37,12 +37,13 @@ int Sortiraj(Position head);
 
 int main(int argc, char** argv) {
 
-	char izbor = "";
-	char unos = "";
-	char Ime[MAX], Prezime[MAX];
-	int Godina;
-	char PrezimeI[MAX];
-	char zadnji = "";
+	char izbor = '\0';
+	char unos = '\0';
+	char Ime[MAX] = {0};
+	char Prezime[MAX] = {0};
+	int Godina = 0;
+	char PrezimeI[MAX] = {0};
+	char zadnji = '\0';
 	int upisan = 0;
 
 	Osoba Head = { .next = NULL, .ime = {0}, .prezime = {0}, .godina = 0 };
@@ -51,6 +52,11 @@ int main(int argc, char** argv) {
 	char* Upis = NULL;
 	Upis = malloc(sizeof(char) * 15);
 	
+	if (!Upis) {
+		perror("Greska! Memoriju nije mogu alocirati!");
+		return -1;
+	}
+
 	Izbornik();
 
 	while (izbor != 'I') {
@@ -198,7 +204,12 @@ int main(int argc, char** argv) {
 			Sortiraj(&Head);
 			break;
 		}
+
+		
 	}
+
+	int BrisiListu(p);
+
 	return EXIT_SUCCESS;
 }
 
@@ -420,11 +431,6 @@ int UpisiDat(char* Upis, Position first) {
 
 	Position clan = NULL;
 
-	/*if (!dat) {
-		printf("Datoteka nije pronadjena.\n");
-		return -1;
-	}*/
-
 	for (clan = first->next; clan != NULL; clan = clan->next) {
 
 		fprintf(dat, " %s %s %d\n", clan->ime, clan->prezime, clan->godina);
@@ -498,4 +504,22 @@ int Sortiraj(Position head) {
 
 	printf("Lista je uspjesno sortirana.\n");
 	return EXIT_SUCCESS;
+}
+
+int BrisiListu(Position head) {
+
+		Position prosli = head;
+		Position trenutni = NULL;
+
+		for (prosli = head; prosli->next != NULL; prosli = prosli->next) {
+			{
+
+				trenutni = prosli->next;
+				prosli->next = prosli->next->next;
+				free(trenutni);
+
+				printf("Lista je izbrisana, a memorija ociscena. \n");
+				break;
+			}
+		}
 }
