@@ -47,6 +47,7 @@ int main() {
 		perror(" Nije moguce alocirati memoriju.\n");
 		return -1;
 	}
+
 	imeDat1 = malloc(sizeof(char) * X);
 	if (!imeDat1) {
 		perror(" Nije moguce alocirati memoriju.\n");
@@ -84,7 +85,7 @@ int main() {
 			scanf(" %s", imeDat1);
 
 			Datoteka(imeDat1, Polinom, Koeficijent, &datPrva);
-			
+
 			printf("\n Upisite ime druge datoteke iz koje zelite ocitati podatke: ");
 			scanf(" %s", imeDat2);
 
@@ -100,7 +101,6 @@ int main() {
 
 		case 'C':
 
-			
 			printf("\n Upisite ime prve datoteke iz koje zelite ocitati podatke: ");
 			scanf(" %s", imeDat1);
 			
@@ -109,14 +109,13 @@ int main() {
 			printf("\n Upisite ime druge datoteke iz koje zelite ocitati podatke: ");
 			scanf(" %s", imeDat2);
 
-			Datoteka(imeDat1, Polinom, Koeficijent, &datDruga);
-
+			Datoteka(imeDat2, Polinom, Koeficijent, &datDruga);
 			Mnozenje(datPrva.next, datDruga.next, Umnozak);
-
+			
 			Ispis(Umnozak);
-			BrisiClan(Umnozak);
 			BrisiClan(&datPrva);
 			BrisiClan(&datDruga);
+			BrisiClan(Umnozak);
 			break;
 
 		case 'D':
@@ -138,6 +137,7 @@ int Datoteka(char* imeDatoteke, int* Polinom, int* Koeficijent, Position Head) {
 	int tester = 0;
 	
 	dat = fopen(imeDatoteke, "r");
+
 	
 	while (tester != 1) {
 
@@ -161,7 +161,7 @@ int Datoteka(char* imeDatoteke, int* Polinom, int* Koeficijent, Position Head) {
 	tester = 0;
 	
 	fclose(dat);
-	return EXIT_SUCCESS;
+	return Unos;
 }
 
 int Unos(Position P, int koef, int polin) {
@@ -170,6 +170,7 @@ int Unos(Position P, int koef, int polin) {
 	Position prosli = P;
 
 	P = P->next;
+
 	while (P != NULL && P->potencija > polin) {
 		prosli = P;
 		P = P->next;
@@ -206,7 +207,6 @@ int Ispis(Position head) {
 		printf(" || %-11d | %-9d | %d*x^%d\n", P->koeficijent, P->potencija, P->koeficijent, P->potencija);
 		P = P->next;
 	}
-	BrisiClan(head);
 
 	return EXIT_SUCCESS;
 
@@ -239,6 +239,7 @@ int Zbrajanje(Position Prva, Position Druga, Position Zbroj) {
 		pomocni = Prva;
 	else
 		pomocni = Druga;
+
 	while (pomocni != NULL) {
 		
 		Unos(Zbroj, pomocni->koeficijent, pomocni->potencija);
@@ -263,21 +264,18 @@ int Izbornik() {
 int Mnozenje(Position Prva, Position Druga, Position umnozak) {
 
 	Position pomocni = Druga;
-	
 
 	while (Prva != NULL) {
 		
-		Druga = pomocni;
-
 		while (Druga != NULL) {
 			
 			Unos(umnozak, Prva->koeficijent * Druga->koeficijent, Prva->potencija + Druga->potencija);
-
 			Druga = Druga->next;
 		}
+
+		Druga = pomocni;
 		Prva = Prva->next;
 	}
-	
 	return EXIT_SUCCESS;
 }
 
