@@ -31,14 +31,6 @@ int Meni() {
 			break;
 		}
 	}		
-	/*	printf("\n Niste unijeli ispravan naziv datoteke! \n Za nastavak upisite [N]   ||   Za prekid programa upisite [P]: ");
-		
-		if (odabir == 'N') {
-			scanf(" %s", imeDat);
-			
-		}
-	
-	}*/
 	return EXIT_SUCCESS;
 }
 
