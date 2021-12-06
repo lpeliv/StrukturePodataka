@@ -1,0 +1,4 @@
+source/extras/Popis/racun1.txt
+source/extras/Popis/racun2.txt
+source/extras/Popis/racun3.txt
+source/extras/Popis/racun4.txt
