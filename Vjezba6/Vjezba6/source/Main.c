@@ -10,7 +10,6 @@ int main() {
 	
 	PostavljanjeRacuna(&head);
 	Meni(&head);
-	BrisiSveRacune(&head);
 
 	return EXIT_SUCCESS;
 }
