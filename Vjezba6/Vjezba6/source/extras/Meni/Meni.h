@@ -2,4 +2,4 @@
 
 #include "extras/Racun/Racun.h"
 
-int Meni(RacunPozicija);
+int Meni(RacunPozicija head);
