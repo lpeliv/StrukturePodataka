@@ -1,6 +1,7 @@
 #include "Filter.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int IzracunajZaradu(FilterPozicija filter, RacunPozicija head) {
 
@@ -26,8 +27,8 @@ int IzracunajZaradu(FilterPozicija filter, RacunPozicija head) {
 
     }
 
-    printf("\n\n || Trazili ste \"%s\"\n || Kolicina: %d\n || Total profit %.02f\n\n", filter->naziv, ukupnaKolicina, ukupnaCijena);
-    printf("=====================================\n\n");
+    printf("\n\n\t || Trazili ste \"%s\"\n\t || Kolicina: %d\n\t || Ukupna zarada %.02f\n\n", filter->naziv, ukupnaKolicina, ukupnaCijena);
+    printf("\t=====================================\n\n");
 
     return EXIT_SUCCESS;
 }
@@ -71,10 +72,6 @@ int PronadjiNajmanjegOdSvih(RacunPozicija head) {
     RacunPozicija racun = head->next;
     RacunPozicija temp = NULL;
     ArtikalPozicija zapamcen = NULL;
-    RacunPozicija Pocetak = head;
-
-    int ukupnaKolicina = 0;
-    float ukupnaCijena = 0.0f;
     char ime[MAX_NAZIV] = { 0 };
 
     novi = (FilterPozicija)malloc(sizeof(Filter));
@@ -92,37 +89,68 @@ int PronadjiNajmanjegOdSvih(RacunPozicija head) {
     }
 
     strcpy(novi->naziv, ime);
-   
-    zapamcen = PronadjiArtikalPoNazivu(&racun->next->artikalHead, novi->naziv);
-    
-    for (racun = head->next; racun->next != NULL; racun = racun->next) {
 
-        ArtikalPozicija prvi = PronadjiArtikalPoNazivu(&racun->artikalHead, novi->naziv);
-        temp = racun->next;
-        ArtikalPozicija drugi = PronadjiArtikalPoNazivu(&temp->artikalHead, novi->naziv);
+    zapamcen = PronadjiArtikalPoNazivu(&racun->artikalHead, novi->naziv);
 
-        if (prvi == NULL)
+    for (racun = head->next; racun != NULL; racun = racun->next) {
+
+        zapamcen = PronadjiArtikalPoNazivu(&racun->artikalHead, novi->naziv);
+        if (zapamcen == NULL)
             continue;
-        
-        else if (drugi == NULL)
-            continue;
-
-        else if (prvi->cijena < zapamcen->cijena) {
-            zapamcen = prvi;
+        else if (strcmp(zapamcen->ime, novi->naziv) == 0)
+        {
             zapamcen->datum = racun->datum;
-        }
-        else if (drugi->cijena < zapamcen->cijena) {
-            zapamcen = drugi;
-            zapamcen->datum = racun->next->datum;
+            break;
         }
     }
 
-    printf("\n || Najniza cijena izmedju dva odabrana racuna: \n\t");
-    IspisDatuma(zapamcen->datum);
-    printf("\n\tArtikl===============Kol===Cijena====Iznos\n");
-    printf("\t");
-    IspisArtikla(zapamcen);
-    
+    if (zapamcen == NULL) {
+        printf("\n || Uneseni artikal se ne nalazi u racunima!\n");
+        return EXIT_FAILURE;
+    }
+
+    else
+    {
+        for (racun = head->next; racun->next != NULL; racun = racun->next) {
+
+            ArtikalPozicija prvi = PronadjiArtikalPoNazivu(&racun->artikalHead, novi->naziv);
+            temp = racun->next;
+            ArtikalPozicija drugi = PronadjiArtikalPoNazivu(&temp->artikalHead, novi->naziv);
+
+            if (prvi == NULL) {
+                if (drugi == NULL)
+                    continue;
+                if (drugi->cijena < zapamcen->cijena) {
+                    zapamcen = drugi;
+                    zapamcen->datum = temp->datum;
+                }
+            }
+            else if (drugi == NULL) {
+                if (prvi == NULL)
+                    continue;
+                if (prvi->cijena < zapamcen->cijena) {
+                    zapamcen = prvi;
+                    zapamcen->datum = racun->datum;
+                }
+            }
+            else if (prvi->cijena < zapamcen->cijena) {
+                zapamcen = prvi;
+                zapamcen->datum = racun->datum;
+            }
+            else if (drugi->cijena < zapamcen->cijena) {
+                zapamcen = drugi;
+                zapamcen->datum = temp->datum;
+            }
+
+        }
+
+
+        printf("\n || Najniza cijena izmedju dva odabrana racuna: \n\t");
+        IspisDatuma(zapamcen->datum);
+        printf("\n\tArtikl===============Kol===Cijena====Iznos\n");
+        printf("\t");
+        IspisArtikla(zapamcen);
+    }
     return EXIT_SUCCESS;
 }
 
@@ -165,10 +193,6 @@ int PronadjiNajvecegOdSvih(RacunPozicija head) {
     RacunPozicija racun = head->next;
     RacunPozicija temp = NULL;
     ArtikalPozicija zapamcen = NULL;
-    RacunPozicija Pocetak = head;
-
-    int ukupnaKolicina = 0;
-    float ukupnaCijena = 0.0f;
     char ime[MAX_NAZIV] = { 0 };
 
     novi = (FilterPozicija)malloc(sizeof(Filter));
@@ -189,25 +213,52 @@ int PronadjiNajvecegOdSvih(RacunPozicija head) {
 
     zapamcen = PronadjiArtikalPoNazivu(&racun->artikalHead, novi->naziv);
 
+    for (racun = head->next; racun != NULL; racun = racun->next) {
+
+        zapamcen = PronadjiArtikalPoNazivu(&racun->artikalHead, novi->naziv);
+        if (zapamcen == NULL)
+            continue;
+        else if (strcmp(zapamcen->ime, novi->naziv) == 0)
+        {
+            zapamcen->datum = racun->datum;
+            break;
+        }
+    }
+
+    if (zapamcen == NULL) {
+        printf("\n || Uneseni artikal se ne nalazi u racunima!\n");
+        return EXIT_FAILURE;
+    }
+
     for (racun = head->next; racun->next != NULL; racun = racun->next) {
 
         ArtikalPozicija prvi = PronadjiArtikalPoNazivu(&racun->artikalHead, novi->naziv);
         temp = racun->next;
         ArtikalPozicija drugi = PronadjiArtikalPoNazivu(&temp->artikalHead, novi->naziv);
 
-        if (prvi == NULL)
-            continue;
-
-        else if (drugi == NULL)
-            continue;
-
+        if (prvi == NULL) {
+            if (drugi == NULL)
+                continue;
+            if (drugi->cijena > zapamcen->cijena) {
+                zapamcen = drugi;
+                zapamcen->datum = temp->datum;
+            }
+        }
+        else if (drugi == NULL) {
+            if (prvi == NULL)
+                continue;
+            if (prvi->cijena > zapamcen->cijena) {
+                zapamcen = prvi;
+                zapamcen->datum = racun->datum;
+            }
+        }
         else if (prvi->cijena > zapamcen->cijena) {
             zapamcen = prvi;
             zapamcen->datum = racun->datum;
         }
         else if (drugi->cijena > zapamcen->cijena) {
             zapamcen = drugi;
-            zapamcen->datum = racun->datum;
+            zapamcen->datum = temp->datum;
         }
     }
 
