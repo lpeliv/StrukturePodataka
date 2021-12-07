@@ -1,6 +1,7 @@
 #pragma once
 
 #include "extras/Greske.h"
+#include "extras/Datum/Datum.h"
 
 #define MAX_NAZIV (128)
 
@@ -12,6 +13,7 @@ typedef struct _artikal {
 	int kolicina;
 	float cijena;
 	ArtikalPozicija next;
+	DatumPozicija datum;
 
 }Artikal;
 

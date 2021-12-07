@@ -6,6 +6,7 @@
 #define MAX_IME (1024)
 
 int PostavljanjeArtikla(ArtikalPozicija artikal) {
+
 	artikal->kolicina = 0;
 	artikal->cijena = 0;
 	memset(artikal->ime, 0, MAX_NAZIV);
@@ -36,7 +37,7 @@ ArtikalPozicija IzradiArtikal(char* str) {
 	PostavljanjeArtikla(artikal);
 
 	brClanova = sscanf(str, "%s %d %f", &artikal->ime, &artikal->kolicina, &artikal->cijena);
-
+		
 	if (brClanova != 3) {
 		printf("Artikal je nevaljal! Trazeni format je <naziv> <kolicina> <cijena>!\n");
 		free(artikal);
@@ -59,6 +60,7 @@ int PretvoriArtikal(char* odrediste, ArtikalPozicija artikal) {
 		sprintf(odrediste, "##NEVALJAL ARTIKAL");
 		return STRING_NEVALJAL;
 	}
+
 	iznos = artikal->kolicina * artikal->cijena;
 
 	sprintf(odrediste, "%-20s  %-5d %-8.02f %.02f", artikal->ime, artikal->kolicina, artikal->cijena, iznos);
@@ -150,3 +152,18 @@ float UsporediArtikleNajveci(ArtikalPozicija prvi, ArtikalPozicija drugi) {
 	else
 		return prvi->cijena;
 }
+
+/*int Unosenje(ArtikalPozicija head, float cijena, char* naziv) {
+
+	ArtikalPozicija artikal = head;
+
+	while (artikal->next != NULL) {
+		
+		if (artikal->ime == naziv) {
+
+			artikal->cijena += cijena;
+		}
+	}
+
+	return EXIT_SUCCESS;
+}*/
