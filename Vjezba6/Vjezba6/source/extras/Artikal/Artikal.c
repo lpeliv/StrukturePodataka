@@ -152,18 +152,3 @@ float UsporediArtikleNajveci(ArtikalPozicija prvi, ArtikalPozicija drugi) {
 	else
 		return prvi->cijena;
 }
-
-/*int Unosenje(ArtikalPozicija head, float cijena, char* naziv) {
-
-	ArtikalPozicija artikal = head;
-
-	while (artikal->next != NULL) {
-		
-		if (artikal->ime == naziv) {
-
-			artikal->cijena += cijena;
-		}
-	}
-
-	return EXIT_SUCCESS;
-}*/
