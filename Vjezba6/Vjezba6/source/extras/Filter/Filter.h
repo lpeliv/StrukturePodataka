@@ -15,5 +15,7 @@ typedef struct _filter {
 
 int IzracunajZaradu(FilterPozicija filter, RacunPozicija head);
 int PronadjiNajmanjeg(FilterPozicija filter, RacunPozicija head);
+int PronadjiNajmanjegOdSvih(RacunPozicija head);
 int PronadjiNajveceg(FilterPozicija filter, RacunPozicija head);
+int PronadjiNajvecegOdSvih(RacunPozicija head);
 FilterPozicija IzradiFilter();

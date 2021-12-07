@@ -65,6 +65,67 @@ int PronadjiNajmanjeg(FilterPozicija filter, RacunPozicija head) {
     }
 }
 
+int PronadjiNajmanjegOdSvih(RacunPozicija head) {
+
+    FilterPozicija novi = NULL;
+    RacunPozicija racun = head->next;
+    RacunPozicija temp = NULL;
+    ArtikalPozicija zapamcen = NULL;
+    RacunPozicija Pocetak = head;
+
+    int ukupnaKolicina = 0;
+    float ukupnaCijena = 0.0f;
+    char ime[MAX_NAZIV] = { 0 };
+
+    novi = (FilterPozicija)malloc(sizeof(Filter));
+    if (!novi) {
+        printf(" Greska! Nije moguce alocirati memoriju!\n");
+        return NULL;
+    }
+
+    printf(" || Unesite ime zeljenog artikla: ");
+    scanf(" %s", ime);
+
+    if (!ime) {
+        printf(" Greska! Nije moguce pronaci artikal!\n");
+        return NULL;
+    }
+
+    strcpy(novi->naziv, ime);
+   
+    zapamcen = PronadjiArtikalPoNazivu(&racun->next->artikalHead, novi->naziv);
+    
+    for (racun = head->next; racun->next != NULL; racun = racun->next) {
+
+        ArtikalPozicija prvi = PronadjiArtikalPoNazivu(&racun->artikalHead, novi->naziv);
+        temp = racun->next;
+        ArtikalPozicija drugi = PronadjiArtikalPoNazivu(&temp->artikalHead, novi->naziv);
+
+        if (prvi == NULL)
+            continue;
+        
+        else if (drugi == NULL)
+            continue;
+
+        else if (prvi->cijena < zapamcen->cijena) {
+            zapamcen = prvi;
+            zapamcen->datum = racun->datum;
+        }
+        else if (drugi->cijena < zapamcen->cijena) {
+            zapamcen = drugi;
+            zapamcen->datum = racun->next->datum;
+        }
+    }
+
+    printf("\n || Najniza cijena izmedju dva odabrana racuna: \n\t");
+    IspisDatuma(zapamcen->datum);
+    printf("\n\tArtikl===============Kol===Cijena====Iznos\n");
+    printf("\t");
+    IspisArtikla(zapamcen);
+    
+    return EXIT_SUCCESS;
+}
+
 int PronadjiNajveceg(FilterPozicija filter, RacunPozicija head) {
 
     RacunPozicija racun = NULL;
@@ -96,6 +157,67 @@ int PronadjiNajveceg(FilterPozicija filter, RacunPozicija head) {
 
         return EXIT_SUCCESS;
     }
+}
+
+int PronadjiNajvecegOdSvih(RacunPozicija head) {
+
+    FilterPozicija novi = NULL;
+    RacunPozicija racun = head->next;
+    RacunPozicija temp = NULL;
+    ArtikalPozicija zapamcen = NULL;
+    RacunPozicija Pocetak = head;
+
+    int ukupnaKolicina = 0;
+    float ukupnaCijena = 0.0f;
+    char ime[MAX_NAZIV] = { 0 };
+
+    novi = (FilterPozicija)malloc(sizeof(Filter));
+    if (!novi) {
+        printf(" Greska! Nije moguce alocirati memoriju!\n");
+        return NULL;
+    }
+
+    printf(" || Unesite ime zeljenog artikla: ");
+    scanf(" %s", ime);
+
+    if (!ime) {
+        printf(" Greska! Nije moguce pronaci artikal!\n");
+        return NULL;
+    }
+
+    strcpy(novi->naziv, ime);
+
+    zapamcen = PronadjiArtikalPoNazivu(&racun->artikalHead, novi->naziv);
+
+    for (racun = head->next; racun->next != NULL; racun = racun->next) {
+
+        ArtikalPozicija prvi = PronadjiArtikalPoNazivu(&racun->artikalHead, novi->naziv);
+        temp = racun->next;
+        ArtikalPozicija drugi = PronadjiArtikalPoNazivu(&temp->artikalHead, novi->naziv);
+
+        if (prvi == NULL)
+            continue;
+
+        else if (drugi == NULL)
+            continue;
+
+        else if (prvi->cijena > zapamcen->cijena) {
+            zapamcen = prvi;
+            zapamcen->datum = racun->datum;
+        }
+        else if (drugi->cijena > zapamcen->cijena) {
+            zapamcen = drugi;
+            zapamcen->datum = racun->datum;
+        }
+    }
+
+    printf("\n || Najvisa cijena izmedju dva odabrana racuna: \n\t");
+    IspisDatuma(zapamcen->datum);
+    printf("\n\tArtikl===============Kol===Cijena====Iznos\n");
+    printf("\t");
+    IspisArtikla(zapamcen);
+
+    return EXIT_SUCCESS;
 }
 
 FilterPozicija IzradiFilter() {
@@ -130,4 +252,3 @@ FilterPozicija IzradiFilter() {
 
     return NULL;
 }
-
