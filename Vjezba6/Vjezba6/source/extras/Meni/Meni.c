@@ -28,12 +28,12 @@ int Meni(RacunPozicija head) {
 	printf(" Datoteka %s je uspjesno ucitana: \n\n", imeDat);
 	IspisSvihRacuna(head);
 	
-	while (unos != 'I') {
+	while (unos != 'H') {
 		printf("\n\n || Ovo je vas izbornik:");
 		printf("\n || Odaberite [A] za ponovni prikaz izbornika.\n || Filteri: \n || Odaberite [B] za izracun zarade.\n ||" 
 			" Odaberite [C] za prikaz cijene najjeftinijeg artikla izmedju dva racuna.\n || Odaberite [D] za prikaz cijene najskupljeg artikla izmedju dva racuna.\n ||"
 			" Odaberite [E] za ispis svih racuna.\n || Odaberite [F] za prikaz cijene najjeftinijeg artikla izmedju svih racuna.\n ||"
-			" Odaberite [H] za prikaz cijene najjskupljeg artikla izmedju svih racuna.\n || Odaberite [I] za izlazak iz programa.\n");
+			" Odaberite [G] za prikaz cijene najjskupljeg artikla izmedju svih racuna.\n || Odaberite [H] za izlazak iz programa.\n");
 		printf(" \n || Odaberite zeljeni unos: ");
 		scanf(" %c", &unos);
 
@@ -82,11 +82,11 @@ int Meni(RacunPozicija head) {
 			IspisSvihRacuna(head);
 			break;
 
-		case 'G':
+		case 'F':
 			PronadjiNajmanjegOdSvih(head);
 			break;
 
-		case 'H':
+		case 'G':
 			PronadjiNajvecegOdSvih(head); 
 			break;
 
