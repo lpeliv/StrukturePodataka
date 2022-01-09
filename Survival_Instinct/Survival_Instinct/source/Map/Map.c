@@ -3,70 +3,49 @@
 #include "Map.h"
 #include "Player/Player.h"
 #include "Menu/Menu.h"
+#include "Chest/Chest.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-int ReadMap(char* input, char* name) {
+int ReadMap(char* input, int* opened, int* CP, int* CC) {
 
 	char ArrayMap[X][Y];
 	FILE* fp = NULL;
-	FILE* fpN = NULL;
 	int i = 0;
 	int j = 0;
 	int PlayerX = 0;
 	int PlayerY = 0;
 	int movement = 2;
-	int opened = 0;
+	int total = *CP;
+	int ChestCounter = *CC;
 
 	fp = fopen("Game/Map.txt", "r");
-	opened = 1;
+	puts("\n");
 
-	for (i = 0; i < 16; i++) {
-		for (j = 0; j < 16; j++) {
+	for (i = 0; i < X; i++) {
+		for (j = 0; j < Y; j++) {
 			fscanf(fp, " %c", &ArrayMap[i][j]);
-
-			if (ArrayMap[i][j] == 'S')
-				printf("\033[0;32m   %c", ArrayMap[i][j]);
-
-			else if (ArrayMap[i][j] == 'C')
-				printf("\033[1;34m   %c", ArrayMap[i][j]);
-
-			else if (ArrayMap[i][j] == 'T')
-				printf("\033[0;36m   %c", ArrayMap[i][j]);
-
-			else if (ArrayMap[i][j] == 'L')
-				printf("\033[1;33m   %c", ArrayMap[i][j]);
-
-			else if (ArrayMap[i][j] == 'F')
-				printf("\033[1;35m   %c", ArrayMap[i][j]);
-
-			else if (ArrayMap[i][j] == 'X')
-				printf("\033[0;30m   %c", ArrayMap[i][j]);
-
-			else if (ArrayMap[i][j] == 'P') {
-
+			if (ArrayMap[i][j] == 'P') {
 				PlayerX = i;
 				PlayerY = j;
-				printf("\033[1;31m   %c", ArrayMap[i][j]);
 			}
-
-			else
-				printf("\033[0m   %c", ArrayMap[i][j]);
 		}
-		puts("\n");
-
-		printf("\033[0m");
-
 	}
 
-
-
+	//Moving around the map
 	switch (*input) {
 
+	case '\0':
+		*CP = 0;
+		break;
+
 	case 'w':
-		if (PlayerX != 0 && ArrayMap[PlayerX - 1][PlayerY] != 'T' && ArrayMap[PlayerX - 1][PlayerY] != 'L' && ArrayMap[PlayerX - 1][PlayerY] != 'X') {
+		if (PlayerX != 0 && ArrayMap[PlayerX - 1][PlayerY] != 'T' && ArrayMap[PlayerX - 1][PlayerY] != 'L'
+			&& ArrayMap[PlayerX - 1][PlayerY] != 'X' && ArrayMap[PlayerX - 1][PlayerY] != 'C') {
+
 			ArrayMap[PlayerX - 1][PlayerY] = 'P';
 			ArrayMap[PlayerX][PlayerY] = 'S';
+			ChestCounter += 1;
 			movement = 1;
 		}
 
@@ -78,7 +57,8 @@ int ReadMap(char* input, char* name) {
 		}
 
 		else if (ArrayMap[PlayerX - 1][PlayerY] == 'T') {
-			printf("\n\t Cannot move left.");
+			printf("\n\t\033[1;31m Cannot move left.");
+			printf("\033[0m");
 			movement = 0;
 		}
 
@@ -89,12 +69,32 @@ int ReadMap(char* input, char* name) {
 			return 1;
 		}
 
+		else if (ArrayMap[PlayerX - 1][PlayerY] == 'C') {
+			if (ChestCounter < Ccount) {
+				printf("\n\t\033[0;31m Chest is locked for \033[1;31m%d \033[0;31m moves!", (Ccount - ChestCounter));
+				break;
+			}
+			
+			printf("\n\t\033[1;32m You opened a chest!");
+			printf("\033[0m");
+			*CP = ChestReward(&total);
+			ChestCounter = 0;
+			movement = 1;
+		}
+
+		else {
+			printf("\n\t\033[1;31m Cannot move up.");
+			printf("\033[0m");
+		}
 		break;
 	case 's':
 
-		if (PlayerX != 15 && ArrayMap[PlayerX + 1][PlayerY] != 'T' && ArrayMap[PlayerX + 1][PlayerY] != 'L' && ArrayMap[PlayerX + 1][PlayerY] != 'X') {
+		if (PlayerX != (X-1) && ArrayMap[PlayerX + 1][PlayerY] != 'T' && ArrayMap[PlayerX + 1][PlayerY] != 'L'
+			&& ArrayMap[PlayerX + 1][PlayerY] != 'X' && ArrayMap[PlayerX + 1][PlayerY] != 'C') {
+
 			ArrayMap[PlayerX + 1][PlayerY] = 'P';
 			ArrayMap[PlayerX][PlayerY] = 'S';
+			ChestCounter += 1;
 			movement = 1;
 		}
 
@@ -106,7 +106,8 @@ int ReadMap(char* input, char* name) {
 		}
 
 		else if (ArrayMap[PlayerX + 1][PlayerY] == 'T') {
-			printf("\n\t Cannot move left.");
+			printf("\n\t\033[1;31m Cannot move left.");
+			printf("\033[0m");
 			movement = 0;
 		}
 
@@ -117,15 +118,31 @@ int ReadMap(char* input, char* name) {
 			return 1;
 		}
 
-		else
-			printf("\n\t Cannot move down.");
+		else if (ArrayMap[PlayerX + 1][PlayerY] == 'C') {
+			if (ChestCounter < Ccount) {
+				printf("\n\t\033[0;31m Chest is locked for \033[1;31m%d \033[0;31m moves!", (Ccount - ChestCounter));
+				break;
+			}
 
+			printf("\n\t\033[1;32m You opened a chest!");
+			printf("\033[0m");
+			*CP = ChestReward(&total);
+			ChestCounter = 0;
+			movement = 1;
+		}
+
+		else {
+			printf("\n\t\033[1;31m Cannot move down.");
+			printf("\033[0m");
+		}
 		break;
-
 	case 'a':
-		if (PlayerY != 0 && ArrayMap[PlayerX][PlayerY - 1] != 'T' && ArrayMap[PlayerX][PlayerY - 1] != 'L' && ArrayMap[PlayerX][PlayerY - 1] != 'X') {
+		if (PlayerY != 0 && ArrayMap[PlayerX][PlayerY - 1] != 'T' && ArrayMap[PlayerX][PlayerY - 1] != 'L'
+			&& ArrayMap[PlayerX][PlayerY - 1] != 'X' && ArrayMap[PlayerX][PlayerY - 1] != 'C') {
+
 			ArrayMap[PlayerX][PlayerY - 1] = 'P';
 			ArrayMap[PlayerX][PlayerY] = 'S';
+			ChestCounter += 1;
 			movement = 1;
 		}
 
@@ -137,7 +154,8 @@ int ReadMap(char* input, char* name) {
 		}
 
 		else if (ArrayMap[PlayerX][PlayerY - 1] == 'T') {
-			printf("\n\t Cannot move left.");
+			printf("\n\t\033[1;31m Cannot move left.");
+			printf("\033[0m");
 			movement = 0;
 		}
 
@@ -147,12 +165,33 @@ int ReadMap(char* input, char* name) {
 			movement = 1;
 			return 1;
 		}
+
+		else if (ArrayMap[PlayerX][PlayerY - 1] == 'C') {
+			if (ChestCounter < Ccount) {
+				printf("\n\t\033[0;31m Chest is locked for \033[1;31m%d \033[0;31m moves!", (Ccount - ChestCounter));
+				break;
+			}
+			printf("\n\t\033[1;32m You opened a chest!");
+			printf("\033[0m");
+			*CP = ChestReward(&total);
+			ChestCounter = 0;
+			movement = 1;
+		}
+
+		else {
+			printf("\n\t\033[1;31m Cannot move left.");
+			printf("\033[0m");
+		}
 		break;
+
 	case 'd':
-		if (PlayerY != 15 && ArrayMap[PlayerX][PlayerY + 1] != 'T' && ArrayMap[PlayerX][PlayerY + 1] != 'L' && ArrayMap[PlayerX][PlayerY + 1] != 'X') {
+		if (PlayerY != (Y-1) && ArrayMap[PlayerX][PlayerY + 1] != 'T' && ArrayMap[PlayerX][PlayerY + 1] != 'L'
+			&& ArrayMap[PlayerX][PlayerY + 1] != 'X' && ArrayMap[PlayerX][PlayerY + 1] != 'C') {
+
 			ArrayMap[PlayerX][PlayerY + 1] = 'P';
 			ArrayMap[PlayerX][PlayerY] = 'S';
 			movement = 1;
+			ChestCounter += 1;
 		}
 
 		else if (ArrayMap[PlayerX][PlayerY + 1] == 'L') {
@@ -173,7 +212,27 @@ int ReadMap(char* input, char* name) {
 			printf("\033[0m");
 			return 1;
 		}
+
+		else if (ArrayMap[PlayerX][PlayerY + 1] == 'C') {
+			if (ChestCounter < Ccount) {
+				printf("\n\t\033[0;31m Chest is locked for \033[1;31m%d \033[0;31m moves!", (Ccount - ChestCounter));
+				break;
+			}
+
+			printf("\n\t\033[1;32m You opened a chest!");
+			printf("\033[0m");
+			*CP = ChestReward(&total);
+			ChestCounter = 0;
+			movement = 1;
+		}
+
+		else {
+			printf("\n\t\033[1;31m Cannot move right.");
+			printf("\033[0m");
+		}
 		break;
+
+		
 
 	default:
 		printf("\n\t You typed wrong direction!");
@@ -183,8 +242,8 @@ int ReadMap(char* input, char* name) {
 	if (movement == 1) {
 		fp = fopen("Game/Map.txt", "w");
 
-		for (i = 0; i < 16; i++) {
-			for (j = 0; j < 16; j++) {
+		for (i = 0; i < X; i++) {
+			for (j = 0; j < Y; j++) {
 
 				fprintf(fp, "%c", ArrayMap[i][j]);
 			}
@@ -196,42 +255,43 @@ int ReadMap(char* input, char* name) {
 		movement = 0;
 	}
 
-	for (i = 0; i < 16; i++) {
-		for (j = 0; j < 16; j++) {
+	puts("\n");
+	if (*input != '\0') {
+		for (i = 0; i < X; i++) { 
+			for (j = 0; j < Y; j++) {
 
-			if (ArrayMap[i][j] == 'S')
-				printf("\033[0;32m   %c", ArrayMap[i][j]);
+				if (ArrayMap[i][j] == 'S')
+					printf("\033[0;32m   %c", ArrayMap[i][j]);
 
-			else if (ArrayMap[i][j] == 'C')
-				printf("\033[1;34m   %c", ArrayMap[i][j]);
+				else if (ArrayMap[i][j] == 'C')
+					printf("\033[1;34m   %c", ArrayMap[i][j]);
 
-			else if (ArrayMap[i][j] == 'T')
-				printf("\033[0;36m   %c", ArrayMap[i][j]);
+				else if (ArrayMap[i][j] == 'T')
+					printf("\033[0;36m   %c", ArrayMap[i][j]);
 
-			else if (ArrayMap[i][j] == 'L')
-				printf("\033[1;33m   %c", ArrayMap[i][j]);
+				else if (ArrayMap[i][j] == 'L')
+					printf("\033[1;33m   %c", ArrayMap[i][j]);
 
-			else if (ArrayMap[i][j] == 'F')
-				printf("\033[1;35m   %c", ArrayMap[i][j]);
+				else if (ArrayMap[i][j] == 'X')
+					printf("\033[0;32m   %c", ArrayMap[i][j]);
 
-			else if (ArrayMap[i][j] == 'X')
-				printf("\033[0;32m   %c", ArrayMap[i][j]);
+				else if (ArrayMap[i][j] == 'P') {
 
-			else if (ArrayMap[i][j] == 'P') {
+					PlayerX = i;
+					PlayerY = j;
+					printf("\033[1;31m   %c", ArrayMap[i][j]);
+				}
 
-				PlayerX = i;
-				PlayerY = j;
-				printf("\033[1;31m   %c", ArrayMap[i][j]);
+				else
+					printf("\033[0m   %c", ArrayMap[i][j]);
 			}
+			puts("\n");
 
-			else
-				printf("\033[0m   %c", ArrayMap[i][j]);
+			printf("\033[0m");
 		}
-		puts("\n");
-
-		printf("\033[0m");
-
 	}
-	printf("\t Your player is here: X - %d, Y - %d\n\n", PlayerX, PlayerY);
+
+	printf("\n\t Your player is here: X - %d, Y - %d\n\n", PlayerX, PlayerY);
+	*CC = ChestCounter;
 	return EXIT_SUCCESS;
 }

@@ -34,7 +34,6 @@ int Menu() {
 
 			NewPlayer->next = P->next;
 			P->next = NewPlayer;
-
 		}
 	}
 
@@ -56,11 +55,9 @@ int Menu() {
 
 		switch (entry) {
 
-
 		case 'A':
-			//starting new game
+			//Starting new game
 			dead = PlayerEntry(P);
-			
 			if(dead == PLAYER_DIED)
 			//SystemClear();
 			
@@ -105,18 +102,15 @@ int Menu() {
 					fclose(dat);
 					return EXIT_SUCCESS;
 				}
-
 				else
 					printf("\t You typed the wrong letter.\n");
 			}
 			break;
 
 		default:
-
 			printf("\t You typed the wrong letter.\n");
 			break;
 		}
-
 	}
 
 	if(dat)

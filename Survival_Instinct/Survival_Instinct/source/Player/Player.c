@@ -15,12 +15,16 @@ int PlayerEntry(PlayerPos head) {
 	PlayerPos game = NULL;
 	PlayerPos NewPlayer = NULL;
 	PlayerPos temp = NULL;
+	char ArrayMap[X][Y];
 	char name[MAX_PLAYER_NAME] = { 0 };
 	int sameName = 0;
 	int PlayerDeath = 0;
 	char input = '\0';
+	int opened = 0;
+	int cC = 0;
+	int i, j = 0;
 	FILE* dat = NULL;
-	
+
 	printf("\n\t Please type the name of your player: ");
 	scanf(" %s", name);
 	
@@ -49,6 +53,45 @@ int PlayerEntry(PlayerPos head) {
 		
 		InsertPlayerAfter(head, NewPlayer);
 		
+		NewPlayer->CharacterPoints = 10;
+
+		dat = fopen("Game/Map.txt", "r");
+		puts("\n");
+
+		for (i = 0; i < X; i++) {
+			for (j = 0; j < Y; j++) {
+				fscanf(dat, " %c", &ArrayMap[i][j]);
+
+				if (ArrayMap[i][j] == 'S')
+					printf("\033[0;32m   %c", ArrayMap[i][j]);
+
+				else if (ArrayMap[i][j] == 'C')
+					printf("\033[1;34m   %c", ArrayMap[i][j]);
+
+				else if (ArrayMap[i][j] == 'T')
+					printf("\033[0;36m   %c", ArrayMap[i][j]);
+
+				else if (ArrayMap[i][j] == 'L')
+					printf("\033[1;33m   %c", ArrayMap[i][j]);
+
+				else if (ArrayMap[i][j] == 'X')
+					printf("\033[0;32m   %c", ArrayMap[i][j]);
+
+				else if (ArrayMap[i][j] == 'P') {
+					printf("\033[1;31m   %c", ArrayMap[i][j]);
+				}
+
+				else
+					printf("\033[0m   %c", ArrayMap[i][j]);
+			}
+			puts("\n");
+
+			printf("\033[0m");
+
+		}
+		fclose(dat);
+
+
 		while (input != 'E') {
 			
 			//SystemClear();
@@ -58,13 +101,17 @@ int PlayerEntry(PlayerPos head) {
 				switch (input) {
 
 				case 'E':
+
 					break;
 
 				default:
 
-					PlayerDeath = ReadMap(&input, NewPlayer->name);
-
-					if (PlayerDeath == 1) {
+					PlayerDeath = ReadMap(&input, &opened, &NewPlayer->CharacterPoints, &cC);
+					printf("\n\t Your stats: %d \n", NewPlayer->CharacterPoints);
+					if (PlayerDeath == 1 || NewPlayer->CharacterPoints < 0) {
+						if (NewPlayer->CharacterPoints < 0)
+							printf("\n\t\033[1;31m You were too greedy!");
+						printf("\033[0m");
 						temp = NewPlayer;
 						NewPlayer = NewPlayer->next;
 						head->next = NewPlayer;
@@ -86,6 +133,14 @@ int PlayerEntry(PlayerPos head) {
 				printf("\033[0m");
 				return EXIT_SUCCESS;
 			}
+
+			printf("\n\n\t You are entering main menu!\n");
+
+			dat = fopen("source\\saves\\players.txt", "w");
+			for (game = head->next; game != NULL; game = game->next) {
+				fprintf(dat, " %s\n", game->name);
+			}
+			fclose(dat);
 		}
 	}
 	return EXIT_SUCCESS;
@@ -126,7 +181,7 @@ int InsertPlayerAfter(PlayerPos P, PlayerPos NewPlayer) {
 //printing player list
 int PlayerList(PlayerPos head) {
 
-	PlayerPos game = head->next;
+	PlayerPos game = head;
 
 	printf("\n\t This is all of your saved games: \n\n");
 
@@ -137,7 +192,7 @@ int PlayerList(PlayerPos head) {
 		return EXIT_SUCCESS;
 	}
 	
-	for (; game != NULL; game = game->next) {
+	for (game = head->next; game != NULL; game = game->next) {
 		
 		printf("\t Player name: %s", game->name);
 		puts("\t");

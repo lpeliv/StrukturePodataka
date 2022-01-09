@@ -8,6 +8,7 @@ typedef struct _playerStruct {
 	
 	char name[MAX_PLAYER_NAME]; //Player name
 	int element; //placeHolder
+	int CharacterPoints;
 	PlayerPos next; //Pointing to next player
 
 }PlayerStruct;
@@ -17,4 +18,3 @@ PlayerPos CreatePlayer(char* Name);
 int PlayerList(PlayerPos head);
 int FindByPlayerName(char* Name, PlayerPos head);
 int Switch(PlayerPos head);
-int Position(char* input);
