@@ -1,13 +1,14 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "Map.h"
-#include "Player/Player.h"
 #include "Menu/Menu.h"
 #include "Chest/Chest.h"
+#include "Enemy/Enemy.h"
+#include "Color.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-int ReadMap(char* input, int* opened, int* CP, int* CC) {
+int ReadMap(char* input, int* opened, int* CP, int* CC, char* Name) {
 
 	char ArrayMap[X][Y];
 	FILE* fp = NULL;
@@ -18,10 +19,43 @@ int ReadMap(char* input, int* opened, int* CP, int* CC) {
 	int movement = 2;
 	int total = *CP;
 	int ChestCounter = *CC;
+	char name[MAX_PLAYER_NAME] = { 0 };
 
-	fp = fopen("Game/Map.txt", "r");
+	if (*opened == 0) {
+		fp = fopen("Game/Map.txt", "r");
+		*opened = 1;
+		for (i = 0; i < X; i++) {
+			for (j = 0; j < Y; j++) {
+				fscanf(fp, " %c", &ArrayMap[i][j]);
+				if (ArrayMap[i][j] == 'P') {
+					PlayerX = i;
+					PlayerY = j;
+				}
+			}
+		}
+		fclose(fp);
+
+		fp = fopen(Name, "w");
+
+		for (i = 0; i < X; i++) {
+			for (j = 0; j < Y; j++) {
+
+				fprintf(fp, "%c", ArrayMap[i][j]);
+			}
+			fprintf(fp, "\n");
+		}
+
+		fclose(fp);
+	}
+	else
+		fp = fopen(Name, "r");
+
+	if (!fp) {
+		printf("\n\t Map doesn't exist! Check your files!");
+		return EXIT_SUCCESS;
+	}
 	puts("\n");
-
+	
 	for (i = 0; i < X; i++) {
 		for (j = 0; j < Y; j++) {
 			fscanf(fp, " %c", &ArrayMap[i][j]);
@@ -32,11 +66,13 @@ int ReadMap(char* input, int* opened, int* CP, int* CC) {
 		}
 	}
 
+	fclose(fp);
+
 	//Moving around the map
 	switch (*input) {
 
 	case '\0':
-		*CP = 0;
+		*CP = 50;
 		break;
 
 	case 'w':
@@ -45,46 +81,43 @@ int ReadMap(char* input, int* opened, int* CP, int* CC) {
 
 			ArrayMap[PlayerX - 1][PlayerY] = 'P';
 			ArrayMap[PlayerX][PlayerY] = 'S';
+			*CP = EnemySpawner(&total);
 			ChestCounter += 1;
 			movement = 1;
 		}
 
 		else if (ArrayMap[PlayerX - 1][PlayerY] == 'L') {
-			printf("\n\t\033[1;31m You fell in lava!");
+			printf(DarkYellow"\n\t You fell in lava!"White);
 			movement = 1;
-			printf("\033[0m");
 			return 1;
 		}
 
 		else if (ArrayMap[PlayerX - 1][PlayerY] == 'T') {
-			printf("\n\t\033[1;31m Cannot move left.");
-			printf("\033[0m");
+			printf(DarkRed"\n\t Cannot move up."White);
 			movement = 0;
 		}
 
 		else if (ArrayMap[PlayerX - 1][PlayerY] == 'X') {
-			printf("\n\t\033[1;31m You fell in trap!");
+			printf(DarkRed"\n\t You fell in a trap!"White);
 			movement = 1;
-			printf("\033[0m");
 			return 1;
 		}
 
 		else if (ArrayMap[PlayerX - 1][PlayerY] == 'C') {
 			if (ChestCounter < Ccount) {
-				printf("\n\t\033[0;31m Chest is locked for \033[1;31m%d \033[0;31m moves!", (Ccount - ChestCounter));
+				printf(Red"\n\t Chest is locked for "DarkRed"%d", (Ccount - ChestCounter));
+				printf(Red" moves!"White);
 				break;
 			}
 			
-			printf("\n\t\033[1;32m You opened a chest!");
-			printf("\033[0m");
+			printf(DarkGreen"\n\t You opened a chest!"White);
 			*CP = ChestReward(&total);
 			ChestCounter = 0;
 			movement = 1;
 		}
 
 		else {
-			printf("\n\t\033[1;31m Cannot move up.");
-			printf("\033[0m");
+			printf(DarkRed"\n\t Cannot move up."White);
 		}
 		break;
 	case 's':
@@ -94,46 +127,43 @@ int ReadMap(char* input, int* opened, int* CP, int* CC) {
 
 			ArrayMap[PlayerX + 1][PlayerY] = 'P';
 			ArrayMap[PlayerX][PlayerY] = 'S';
+			*CP = EnemySpawner(&total);
 			ChestCounter += 1;
 			movement = 1;
 		}
 
 		else if (ArrayMap[PlayerX + 1][PlayerY] == 'L') {
-			printf("\n\t\033[1;31m You fell in lava!");
+			printf(DarkYellow"\n\t You fell in lava!"White);
 			movement = 1;
-			printf("\033[0m");
 			return 1;
 		}
 
 		else if (ArrayMap[PlayerX + 1][PlayerY] == 'T') {
-			printf("\n\t\033[1;31m Cannot move left.");
-			printf("\033[0m");
+			printf(DarkRed"\n\t Cannot move down."White);
 			movement = 0;
 		}
 
 		else if (ArrayMap[PlayerX + 1][PlayerY] == 'X') {
-			printf("\n\t\033[1;31m You fell in trap!");
+			printf(DarkRed"\n\t You fell in a trap!"White);
 			movement = 1;
-			printf("\033[0m");
 			return 1;
 		}
 
 		else if (ArrayMap[PlayerX + 1][PlayerY] == 'C') {
 			if (ChestCounter < Ccount) {
-				printf("\n\t\033[0;31m Chest is locked for \033[1;31m%d \033[0;31m moves!", (Ccount - ChestCounter));
+				printf(Red"\n\t Chest is locked for "DarkRed"%d", (Ccount - ChestCounter));
+				printf(Red" moves!"White);
 				break;
 			}
 
-			printf("\n\t\033[1;32m You opened a chest!");
-			printf("\033[0m");
+			printf(DarkGreen"\n\t You opened a chest!"White);
 			*CP = ChestReward(&total);
 			ChestCounter = 0;
 			movement = 1;
 		}
 
 		else {
-			printf("\n\t\033[1;31m Cannot move down.");
-			printf("\033[0m");
+			printf(DarkRed"\n\t Cannot move down."White);
 		}
 		break;
 	case 'a':
@@ -142,45 +172,42 @@ int ReadMap(char* input, int* opened, int* CP, int* CC) {
 
 			ArrayMap[PlayerX][PlayerY - 1] = 'P';
 			ArrayMap[PlayerX][PlayerY] = 'S';
+			*CP = EnemySpawner(&total);
 			ChestCounter += 1;
 			movement = 1;
 		}
 
 		else if (ArrayMap[PlayerX][PlayerY - 1] == 'L') {
-			printf("\n\t\033[1;31m You fell in lava!");
-			printf("\033[0m");
+			printf(DarkYellow"\n\t You fell in lava!"White);
 			movement = 1;
 			return 1;
 		}
 
 		else if (ArrayMap[PlayerX][PlayerY - 1] == 'T') {
-			printf("\n\t\033[1;31m Cannot move left.");
-			printf("\033[0m");
+			printf(DarkRed"\n\t Cannot move left."White);
 			movement = 0;
 		}
 
 		else if (ArrayMap[PlayerX][PlayerY - 1] == 'X') {
-			printf("\n\t\033[1;31m You fell in trap!");
-			printf("\033[0m");
+			printf(DarkRed"\n\t You fell in a trap!"White);
 			movement = 1;
 			return 1;
 		}
 
 		else if (ArrayMap[PlayerX][PlayerY - 1] == 'C') {
 			if (ChestCounter < Ccount) {
-				printf("\n\t\033[0;31m Chest is locked for \033[1;31m%d \033[0;31m moves!", (Ccount - ChestCounter));
+				printf(Red"\n\t Chest is locked for "DarkRed"%d", (Ccount - ChestCounter));
+				printf(Red" moves!"White);
 				break;
 			}
-			printf("\n\t\033[1;32m You opened a chest!");
-			printf("\033[0m");
+			printf(DarkGreen"\n\t You opened a chest!"White);
 			*CP = ChestReward(&total);
 			ChestCounter = 0;
 			movement = 1;
 		}
 
 		else {
-			printf("\n\t\033[1;31m Cannot move left.");
-			printf("\033[0m");
+			printf(DarkRed"\n\t Cannot move left."White);
 		}
 		break;
 
@@ -190,57 +217,55 @@ int ReadMap(char* input, int* opened, int* CP, int* CC) {
 
 			ArrayMap[PlayerX][PlayerY + 1] = 'P';
 			ArrayMap[PlayerX][PlayerY] = 'S';
+			*CP = EnemySpawner(&total);
 			movement = 1;
 			ChestCounter += 1;
 		}
 
 		else if (ArrayMap[PlayerX][PlayerY + 1] == 'L') {
-			printf("\n\t\033[1;31m You fell in lava!");
+			printf(DarkYellow"\n\t You fell in lava!"White);
 			movement = 1;
-			printf("\033[0m");
 			return 1;
 		}
 
 		else if (ArrayMap[PlayerX][PlayerY + 1] == 'T') {
-			printf("\n\t Cannot move left.");
+			printf(DarkRed"\n\t Cannot move right."White);
 			movement = 0;
 		}
 
 		else if (ArrayMap[PlayerX][PlayerY + 1] == 'X') {
-			printf("\n\t\033[1;31m You fell in trap!");
+			printf(DarkRed"\n\t You fell in a trap!"White);
 			movement = 1;
-			printf("\033[0m");
 			return 1;
 		}
 
 		else if (ArrayMap[PlayerX][PlayerY + 1] == 'C') {
 			if (ChestCounter < Ccount) {
-				printf("\n\t\033[0;31m Chest is locked for \033[1;31m%d \033[0;31m moves!", (Ccount - ChestCounter));
+				printf(Red"\n\t Chest is locked for "DarkRed"%d", (Ccount - ChestCounter));
+				printf(Red" moves!"White);
 				break;
 			}
 
-			printf("\n\t\033[1;32m You opened a chest!");
-			printf("\033[0m");
+			printf(DarkGreen"\n\t You opened a chest!"White);
 			*CP = ChestReward(&total);
 			ChestCounter = 0;
 			movement = 1;
 		}
 
 		else {
-			printf("\n\t\033[1;31m Cannot move right.");
-			printf("\033[0m");
+			printf(DarkRed"\n\t Cannot move right."White);
 		}
 		break;
 
 		
 
 	default:
-		printf("\n\t You typed wrong direction!");
+		printf(DarkRed"\n\t You typed wrong direction!"White);
 		break;
 	}
 
 	if (movement == 1) {
-		fp = fopen("Game/Map.txt", "w");
+		fp = fopen(Name, "w");
 
 		for (i = 0; i < X; i++) {
 			for (j = 0; j < Y; j++) {
@@ -261,37 +286,36 @@ int ReadMap(char* input, int* opened, int* CP, int* CC) {
 			for (j = 0; j < Y; j++) {
 
 				if (ArrayMap[i][j] == 'S')
-					printf("\033[0;32m   %c", ArrayMap[i][j]);
+					printf(Green"    %c", ArrayMap[i][j]);
 
 				else if (ArrayMap[i][j] == 'C')
-					printf("\033[1;34m   %c", ArrayMap[i][j]);
+					printf(DarkBlue"    %c", ArrayMap[i][j]);
 
 				else if (ArrayMap[i][j] == 'T')
-					printf("\033[0;36m   %c", ArrayMap[i][j]);
+					printf(DarkCyan"    %c", ArrayMap[i][j]);
 
 				else if (ArrayMap[i][j] == 'L')
-					printf("\033[1;33m   %c", ArrayMap[i][j]);
+					printf(DarkYellow"    %c", ArrayMap[i][j]);
 
 				else if (ArrayMap[i][j] == 'X')
-					printf("\033[0;32m   %c", ArrayMap[i][j]);
+					printf(Green"    %c", ArrayMap[i][j]);
 
 				else if (ArrayMap[i][j] == 'P') {
 
 					PlayerX = i;
 					PlayerY = j;
-					printf("\033[1;31m   %c", ArrayMap[i][j]);
+					printf(DarkRed"    %c", ArrayMap[i][j]);
 				}
-
 				else
-					printf("\033[0m   %c", ArrayMap[i][j]);
+					printf(White"   %c", ArrayMap[i][j]);
 			}
 			puts("\n");
-
-			printf("\033[0m");
+			printf(White);
 		}
 	}
 
 	printf("\n\t Your player is here: X - %d, Y - %d\n\n", PlayerX, PlayerY);
 	*CC = ChestCounter;
+
 	return EXIT_SUCCESS;
 }

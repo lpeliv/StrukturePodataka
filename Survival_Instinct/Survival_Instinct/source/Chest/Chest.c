@@ -1,9 +1,9 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-
 #include <stdio.h>
 #include <time.h>
 #include "Chest.h"
+#include "Color.h"
 #include "Player/Player.h"
 
 int ChestReward(int* Total) {
@@ -22,23 +22,23 @@ int ChestReward(int* Total) {
 		
 		if (reward >= 1 && reward < 4) {
 			printf("\t You found an Iron Sword.\n");
-			total += 2;
+			total += 3;
 		}
 
 		else if (reward >= 4 && reward < 5) {
 			printf("\t\033[1;31m You found Poison.\n");
 			printf("\033[0m");
-			total -= 50;
+			total -= 40;
 		}
 
 		else if (reward >= 5 && reward < 7) {
 			printf("\t You found Iron Armour.\n");
-			total += 2;
+			total += 3;
 		}
 		
 		else if (reward >= 7 && reward < 10) {
-			printf("\t You found Strenght Potion.\n");
-			total += 4;
+			printf("\t You found Strength Potion.\n");
+			total += 5;
 		}
 
 		else if (reward >= 10 && reward < 15) {
@@ -64,14 +64,14 @@ int ChestReward(int* Total) {
 
 		else if (reward >= 20 && reward < 35) {
 			printf("\t You found Food.\n");
-			ammount = (rand() % (5 - 1 + 1) + 1);
+			ammount = (rand() % (5 - 2 + 1) + 2);
 			total += ammount;
 		}
 
 		else if (reward >= 35 && reward < 60) {
 			printf("\t You found Food.\n");
-			ammount = (rand() % (100 - 20 + 1) + 5);
-			total += ammount/20;
+			ammount = (rand() % (100 - 20 + 1) + 20);
+			total += ammount/15;
 		}
 
 		else if (reward >= 60 && reward < 75) {
@@ -90,9 +90,8 @@ int ChestReward(int* Total) {
 		}
 
 		else if (reward >= 99 && reward < 101) {
-			printf("\t\033[1;31m You found a Mimic.\n");
-			printf("\033[0m");
-			total -= 80;
+			printf(DarkRed"\t You found a Mimic.\n"White);
+			total -= 60;
 		}
 	}
 	puts("\n");	

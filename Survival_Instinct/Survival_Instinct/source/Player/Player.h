@@ -1,14 +1,14 @@
 #pragma once
 #include "Errors.h"
 #define MAX_PLAYER_NAME (10)
+#define WinValue (500)
 
 typedef struct _playerStruct* PlayerPos;
 
 typedef struct _playerStruct {
 	
 	char name[MAX_PLAYER_NAME]; //Player name
-	int element; //placeHolder
-	int CharacterPoints;
+	int CharacterPoints; //Player Level
 	PlayerPos next; //Pointing to next player
 
 }PlayerStruct;
@@ -16,5 +16,4 @@ typedef struct _playerStruct {
 int PlayerEntry(PlayerPos head);
 PlayerPos CreatePlayer(char* Name);
 int PlayerList(PlayerPos head);
-int FindByPlayerName(char* Name, PlayerPos head);
 int Switch(PlayerPos head);

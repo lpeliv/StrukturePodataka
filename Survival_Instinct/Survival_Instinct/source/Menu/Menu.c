@@ -2,11 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
 #include "Menu/Menu.h"
 #include "Player/Player.h"
 #include "Map/Map.h"
-#include <Windows.h>
+#include "Color.h"
 
 int Menu() {
 
@@ -14,7 +13,7 @@ int Menu() {
 
 	char entry = '\0';
 	char confirmation = '\0';
-	PlayerStruct head = {.name = "\0", .next = NULL, .element = 0};
+	PlayerStruct head = {.name = "\0", .next = NULL};
 	PlayerPos P = &head;
 	FILE* dat = NULL;
 	FILE* MM = NULL;
@@ -22,10 +21,7 @@ int Menu() {
 	int dead = 0;
 	char mm[MAX_LINE] = { 0 };
 
-
-	
 	dat = fopen("source\\saves\\players.txt", "r");
-
 	if (dat) {
 		while (!feof(dat)) {
 
@@ -40,7 +36,7 @@ int Menu() {
 	while (confirmation != 'Y') {
 
 		//Main Menu
-
+		//SystemClear();
 		MM = fopen("source\\Menu\\MainMenu.txt", "r");
 		while (!feof(MM)) {
 			fgets(mm, MAX_LINE, MM);
@@ -86,22 +82,22 @@ int Menu() {
 			Switch(P);
 			break;
 			
-		case 'E':
-
-			break;
-
 		// Exit
 		case 'Z':
 
-			printf("\n\t Are you sure you want to leave the game? Type [Y] for yes or [N] for no: ");
+			printf("\n\t Are you sure you want to leave the game? Type"DarkGreen"[Y]"White" for yes or "DarkRed"[N]"White" for no: ");
 			scanf(" %c", &confirmation);
-			while (confirmation != 'Y') {
+			while (confirmation != 'Y' || confirmation != 'N') {
 				if (confirmation == 'Y') {
 
 					printf("\n\t Thank you for playing the game. Goodbye!\n");
 					fclose(dat);
 					return EXIT_SUCCESS;
 				}
+
+				else if (confirmation == 'N')
+					break;
+
 				else
 					printf("\t You typed the wrong letter.\n");
 			}

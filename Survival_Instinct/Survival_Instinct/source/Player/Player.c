@@ -2,6 +2,7 @@
 
 #include "Player/Player.h"
 #include "Map/Map.h"
+#include "Color.h"
 #include "Menu/Menu.h"
 #include "Errors.h"
 #include <stdio.h>
@@ -21,11 +22,12 @@ int PlayerEntry(PlayerPos head) {
 	int PlayerDeath = 0;
 	char input = '\0';
 	int opened = 0;
+	char ch[MAX_LINE] = { 0 };;
 	int cC = 0;
 	int i, j = 0;
 	FILE* dat = NULL;
 
-	printf("\n\t Please type the name of your player: ");
+	printf("\n\t Please type the name of your player (10 characters max): ");
 	scanf(" %s", name);
 	
 	for (game = head->next; game != NULL; game = game->next) {
@@ -55,7 +57,12 @@ int PlayerEntry(PlayerPos head) {
 		
 		NewPlayer->CharacterPoints = 10;
 
-		dat = fopen("Game/Map.txt", "r");
+		if (opened == 0) {
+			dat = fopen("Game/Map.txt", "r");
+		}
+		else
+			dat = fopen(NewPlayer->name, "r");
+
 		puts("\n");
 
 		for (i = 0; i < X; i++) {
@@ -63,34 +70,31 @@ int PlayerEntry(PlayerPos head) {
 				fscanf(dat, " %c", &ArrayMap[i][j]);
 
 				if (ArrayMap[i][j] == 'S')
-					printf("\033[0;32m   %c", ArrayMap[i][j]);
+					printf(Green"    %c", ArrayMap[i][j]);
 
 				else if (ArrayMap[i][j] == 'C')
-					printf("\033[1;34m   %c", ArrayMap[i][j]);
+					printf(DarkBlue"    %c", ArrayMap[i][j]);
 
 				else if (ArrayMap[i][j] == 'T')
-					printf("\033[0;36m   %c", ArrayMap[i][j]);
+					printf(DarkCyan"    %c", ArrayMap[i][j]);
 
 				else if (ArrayMap[i][j] == 'L')
-					printf("\033[1;33m   %c", ArrayMap[i][j]);
+					printf(DarkYellow"    %c", ArrayMap[i][j]);
 
 				else if (ArrayMap[i][j] == 'X')
-					printf("\033[0;32m   %c", ArrayMap[i][j]);
+					printf(Green"    %c", ArrayMap[i][j]);
 
 				else if (ArrayMap[i][j] == 'P') {
-					printf("\033[1;31m   %c", ArrayMap[i][j]);
+					printf(DarkRed"    %c", ArrayMap[i][j]);
 				}
 
 				else
-					printf("\033[0m   %c", ArrayMap[i][j]);
+					printf(White"    %c", ArrayMap[i][j]);
 			}
 			puts("\n");
-
-			printf("\033[0m");
-
 		}
+		printf(White);
 		fclose(dat);
-
 
 		while (input != 'E') {
 			
@@ -106,12 +110,19 @@ int PlayerEntry(PlayerPos head) {
 
 				default:
 
-					PlayerDeath = ReadMap(&input, &opened, &NewPlayer->CharacterPoints, &cC);
-					printf("\n\t Your stats: %d \n", NewPlayer->CharacterPoints);
+					PlayerDeath = ReadMap(&input, &opened, &NewPlayer->CharacterPoints, &cC, &NewPlayer->name);
+					printf("\n\t Your stats: "DarkYellow"% d ", NewPlayer->CharacterPoints);
+					printf(DarkMagenta"\n\t %d/500", WinValue - NewPlayer->CharacterPoints);
+					printf(White" left to go.");
 					if (PlayerDeath == 1 || NewPlayer->CharacterPoints < 0) {
-						if (NewPlayer->CharacterPoints < 0)
-							printf("\n\t\033[1;31m You were too greedy!");
-						printf("\033[0m");
+						printf(DarkRed"\n\t You had your brains splattered!\n\n"White);
+						dat = fopen("source\\Player\\Brain.txt", "r");
+						while (!feof(dat)) {
+							fgets(ch, MAX_LINE, dat);
+							printf(Magenta" %s"White, ch);
+						}
+						fclose(dat);
+						remove(NewPlayer->name);
 						temp = NewPlayer;
 						NewPlayer = NewPlayer->next;
 						head->next = NewPlayer;
@@ -120,6 +131,11 @@ int PlayerEntry(PlayerPos head) {
 						break;
 					}
 
+					else if (NewPlayer->CharacterPoints >= WinValue) {
+						printf(DarkCyan"\n\t You won the game!"White);
+						input = 'E';
+						break;
+					}
 					printf("\n\t Type E to leave or enter your moves (up - w, down - s, left - a, right - d): ");
 					scanf(" %c", &input);
 
@@ -129,20 +145,20 @@ int PlayerEntry(PlayerPos head) {
 
 			else {
 				input = 'E';
-				printf("\n\n\t\033[1;31m YOU DIED\n\n");
-				printf("\033[0m");
+				printf(DarkRed"\n\n\t YOU DIED\n\n");
+				printf("White");
 				return EXIT_SUCCESS;
 			}
-
-			printf("\n\n\t You are entering main menu!\n");
-
-			dat = fopen("source\\saves\\players.txt", "w");
-			for (game = head->next; game != NULL; game = game->next) {
-				fprintf(dat, " %s\n", game->name);
-			}
-			fclose(dat);
+			
 		}
+
+		printf(Cyan"\n\n\t You are entering main menu!\n"White);
 	}
+	dat = fopen("source\\saves\\players.txt", "w");
+	for (game = head->next; game != NULL; game = game->next) {
+		fprintf(dat, " %s\n", game->name);
+	}
+	fclose(dat);
 	return EXIT_SUCCESS;
 }
 
@@ -162,8 +178,6 @@ PlayerPos CreatePlayer(char* Name) {
 		
 		strcpy(NewPlayer->name, Name);
 		NewPlayer->next = NULL;
-	
-		printf("\n\t You have successfully added a new player.\n\n");
 		return NewPlayer;
 	
 	}
