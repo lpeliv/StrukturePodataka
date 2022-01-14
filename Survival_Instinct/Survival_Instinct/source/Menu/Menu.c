@@ -44,7 +44,6 @@ int Menu() {
 	while (confirmation != 'Y') {
 
 		//Main Menu
-		SystemClear();
 		MM = fopen("source\\Menu\\MainMenu.txt", "r");
 		while (!feof(MM)) {
 			fgets(mm, MAX_LINE, MM);
@@ -62,7 +61,6 @@ int Menu() {
 		case 'A':
 			//Starting new game
 			dead = PlayerEntry(P);
-			SystemClear();
 			
 			break;
 		
@@ -74,13 +72,11 @@ int Menu() {
 			}
 
 			dead = LoadPlayer(P);
-			SystemClear();
 
 			break;
 
 		case 'C':
 
-			SystemClear();
 			PlayerList(P);
 			break;
 
@@ -97,15 +93,20 @@ int Menu() {
 					return EXIT_SUCCESS;
 				}
 
-				else if (confirmation == 'N')
+				else if (confirmation == 'N') {
+					SystemClear();
 					break;
-
-				else
+				}
+				
+				else {
+					SystemClear();
 					printf(Red"\t You typed the wrong letter.\n"White);
+				}
 			}
 			break;
 
 		default:
+			SystemClear();
 			printf(Red"\t You typed the wrong letter.\n"White);
 			break;
 		}
@@ -118,7 +119,7 @@ int Menu() {
 
 int SystemClear() {
 
-	system("clear");
+	system("cls");
 
 	return 0;
 }

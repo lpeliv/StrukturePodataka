@@ -97,8 +97,6 @@ int PlayerEntry(PlayerPos head) {
 		fclose(dat);
 
 		while (input != 'E') {
-			
-			SystemClear();
 
 			if (PlayerDeath != 1) {
 
@@ -138,6 +136,8 @@ int PlayerEntry(PlayerPos head) {
 					}
 					printf("\n\t Type E to leave or enter your moves (up - w, down - s, left - a, right - d): ");
 					scanf(" %c", &input);
+
+					SystemClear();
 					break;
 				}
 			}
@@ -291,8 +291,6 @@ int LoadPlayer(PlayerPos head) {
 
 	while (input != 'E') {
 
-		SystemClear();
-
 		if (PlayerDeath != 1) {
 
 			switch (input) {
@@ -315,6 +313,7 @@ int LoadPlayer(PlayerPos head) {
 						fgets(ch, MAX_LINE, dat);
 						printf(Magenta" %s"White, ch);
 					}
+					puts("\n\n"); 
 					fclose(dat);
 
 					remove(Player->name);
@@ -340,6 +339,8 @@ int LoadPlayer(PlayerPos head) {
 				}
 				printf("\n\t Type E to leave or enter your moves (up - w, down - s, left - a, right - d): ");
 				scanf(" %c", &input);
+
+				SystemClear();
 				break;
 				
 				for (game = head; game->next != NULL; game = game->next) {
