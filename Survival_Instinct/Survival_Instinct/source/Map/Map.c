@@ -72,7 +72,6 @@ int ReadMap(char* input, int* opened, int* CP, int* CC, char* Name) {
 	switch (*input) {
 
 	case '\0':
-		*CP = 50;
 		break;
 
 	case 'w':

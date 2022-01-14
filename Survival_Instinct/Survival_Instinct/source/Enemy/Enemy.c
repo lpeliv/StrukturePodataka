@@ -5,11 +5,13 @@
 #include "Chest/Chest.h"
 #include <time.h>
 #include <stdio.h>
+#include <conio.h>
 
 int EnemySpawner(int *playerLevel) {
 
 	int spawner = 0; //Chance to spawn an enemy
 	int Chance = 0; //Fight victory chance
+	float percentage = 0.0f;
 	int NewStats = *playerLevel; //Player level
 	int EnemyStats = 0; //Enemy level
 	FILE* enemy = NULL;
@@ -23,8 +25,8 @@ int EnemySpawner(int *playerLevel) {
 	//Termitnator
 	if (spawner >= 1 && spawner <= 3) {
 
-		EnemyStats = (NewStats/2 + NewStats/4) + 2;
-		printf(DarkRed"\t You encountered Termitnator level %d.\n\n", EnemyStats);
+		EnemyStats = (rand() % ((NewStats + 10) - (NewStats - 30) + 1)) + (NewStats - 30);
+		printf(DarkRed"\t You encountered Termitnator level %d.\n\n"White, EnemyStats);
 		printf(White);
 
 		enemy= fopen("source\\Enemy\\Termitnator.txt", "r");
@@ -34,7 +36,8 @@ int EnemySpawner(int *playerLevel) {
 		}
 		fclose(enemy);
 
-		Chance = (rand() % ((NewStats + NewStats/4) - (EnemyStats - EnemyStats/4) + 1)) + (EnemyStats - EnemyStats / 4);
+		percentage = (float)NewStats / EnemyStats * 100.00 / 2;
+		Chance = (rand() % ((EnemyStats + NewStats / 2) - (EnemyStats - NewStats / 2) + 1)) + (EnemyStats - NewStats / 2);
 
 		if (Chance > NewStats) {
 			NewStats -= 8;
@@ -42,24 +45,23 @@ int EnemySpawner(int *playerLevel) {
 		}
 
 		else if (Chance == NewStats) {
-			printf(DarkYellow"\t\n Hasta la vista, baby!\n\n"White);
+			printf(DarkYellow"\n\n\t Hasta la vista, baby!\n\n"White);
 		}
 
 		else {
 			printf(DarkGreen"\n\t You saved John Corner and got a reward! +10 points\n\n"White);
 			NewStats += 10;
 		}
-
-		printf(DarkCyan"\n\n\t Press Enter to continue with (de)termination."White);
-		getchar();
-		getchar();
+		printf("\t Chances of winning were %.2f percent.", percentage);
+		printf(DarkCyan"\n\n\t Press any key to continue with (de)termination."White);
+		_getch();
 	}
 
 	//Punster
 	else if (spawner >= 22 && spawner <= 26) {
 
-		EnemyStats = (NewStats / 4 + NewStats / 6) + 2;
-		printf(DarkRed"\t You encountered Punster.\n\n"White);
+		EnemyStats = (rand() % ((NewStats + 25) - (NewStats - 35) + 1)) + (NewStats - 35);
+		printf(DarkRed"\t You encountered Punster level %d.\n\n"White, EnemyStats);
 
 		enemy = fopen("source\\Enemy\\Punster.txt", "r");
 		while (!feof(enemy)) {
@@ -68,7 +70,8 @@ int EnemySpawner(int *playerLevel) {
 		}
 		fclose(enemy);
 
-		Chance = (rand() % ((NewStats + NewStats / 4) - (EnemyStats - EnemyStats / 8) + 1)) + (EnemyStats - EnemyStats / 8);
+		percentage = (float)NewStats / EnemyStats * 100.00 / 2;
+		Chance = (rand() % ((EnemyStats + NewStats / 2) - (EnemyStats - NewStats / 2) + 1)) + (EnemyStats - NewStats / 2);
 
 		if (Chance > NewStats) {
 			NewStats -= 6;
@@ -83,17 +86,16 @@ int EnemySpawner(int *playerLevel) {
 			printf(DarkGreen"\n\t You made him laugh and here is your reward! +8 points\n\n"White);
 			NewStats += 8;
 		}
-
-		printf(DarkCyan"\n\n\t Press Enter to escape to socie-tea."White);
-		getchar();
-		getchar();
+		printf("\t Chances of winning were %.2f percent.", percentage);
+		printf(DarkCyan"\n\n\t Press any key to escape to socie-tea."White);
+		_getch();
 	}
 
 	//Voldesnort
 	else if (spawner >= 55 && spawner <= 58) {
 
-		EnemyStats = (NewStats / 5 + NewStats / 7) + 2;
-		printf(DarkRed"\t You encountered Voldesnort.\n\n"White);
+		EnemyStats = (rand() % ((NewStats + 15) - (NewStats - 35) + 1)) + (NewStats - 35);
+		printf(DarkRed"\t You encountered Voldesnort level %d.\n\n"White, EnemyStats);
 
 		enemy = fopen("source\\Enemy\\Voldesnort.txt", "r");
 		while (!feof(enemy)) {
@@ -102,7 +104,8 @@ int EnemySpawner(int *playerLevel) {
 		}
 		fclose(enemy);
 
-		Chance = (rand() % ((NewStats + NewStats / 4) - (EnemyStats - EnemyStats / 16) + 1)) + (EnemyStats - EnemyStats / 16);
+		percentage = (float)NewStats / EnemyStats * 100.00 / 2;
+		Chance = (rand() % ((EnemyStats + NewStats / 2) - (EnemyStats - NewStats / 2) + 1)) + (EnemyStats - NewStats / 2);
 
 		if (Chance > NewStats) {
 			NewStats -= 4;
@@ -117,45 +120,44 @@ int EnemySpawner(int *playerLevel) {
 			printf(DarkGreen"\n\t I've got your nose! +6 points\n\n"White);
 			NewStats += 6;
 		}
-
-		printf(DarkCyan"\n\n\t Press Enter to leave Fogwarts."White);
-		getchar();
-		getchar();
+		printf("\t Chances of winning were %.2f percent.", percentage);
+		printf(DarkCyan"\n\n\t Press any key to leave Fogwarts."White);
+		_getch();
 	}
 	
 	//Doc Oktobus
 	else if (spawner >= 72 && spawner <= 76) {
 
-	EnemyStats = (NewStats / 6 + NewStats / 8) + 2;
-	printf(DarkRed"\tYou encountered Doc Oktobus.\n\n"White);
+		EnemyStats = (rand() % ((NewStats + 15) - (NewStats - 35) + 1)) + (NewStats - 35);
+		printf(DarkRed"\tYou encountered Doc Oktobus level %d.\n\n"White, EnemyStats);
 
-	enemy = fopen("source\\Enemy\\SquidDoc.txt", "r");
-	while (!feof(enemy)) {
-		fgets(ch, MAX_LINE, enemy);
-		printf(" %s", ch);
+		enemy = fopen("source\\Enemy\\SquidDoc.txt", "r");
+		while (!feof(enemy)) {
+			fgets(ch, MAX_LINE, enemy);
+			printf(" %s", ch);
+		}
+		fclose(enemy);
+
+		percentage = (float)NewStats / EnemyStats * 100.00 / 2;
+		Chance = (rand() % ((EnemyStats + NewStats / 2) - (EnemyStats - NewStats / 2) + 1)) + (EnemyStats - NewStats / 2);
+
+		if (Chance > NewStats) {
+			NewStats -= 5;
+			printf(DarkRed"\n\t Wrong Peter! -5 points\n\n"White);
+		}
+
+		else if (Chance == NewStats) {
+			printf(DarkYellow"\t\n I had you bye the throat!\n\n"White);
+		}
+
+		else {
+			printf(DarkGreen"\n\t Power of sun in palm of your hands! +6 points\n\n"White);
+			NewStats += 8;
+		}
+
+		printf("\t Chances of winning were %.2f percent.", percentage);
+		printf(DarkCyan"\n\n\t Press any key to skip Ock-tober Fest."White);
+		_getch();
 	}
-	fclose(enemy);
-
-	Chance = (rand() % ((NewStats + NewStats / 4) - (EnemyStats - EnemyStats / 12) + 1)) + (EnemyStats - EnemyStats / 12);
-
-	if (Chance > NewStats) {
-		NewStats -= 5;
-		printf(DarkRed"\n\t Wrong Peter! -5 points\n\n"White);
-	}
-
-	else if (Chance == NewStats) {
-		printf(DarkYellow"\t\n I had you bye the throat!\n\n"White);
-	}
-
-	else {
-		printf(DarkGreen"\n\t Power of sun in palm of your hands! +6 points\n\n"White);
-		NewStats += 8;
-	}
-
-	printf(DarkCyan"\n\n\t Press Enter to skip Ock-tober Fest."White);
-	getchar();
-	getchar();
-	}
-	
 	return NewStats;
 }

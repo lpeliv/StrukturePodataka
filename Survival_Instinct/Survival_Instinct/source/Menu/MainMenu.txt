@@ -13,9 +13,8 @@
 
 
 	Type [A] to start new game.
-	Type [B] to load last saved game.
+	Type [B] to load saved game.
 	Type [C] to check all saved games.
-	Type [D] to load saved game.
-	Type [Z] to leave.
+	Type [E] to leave.
 
 

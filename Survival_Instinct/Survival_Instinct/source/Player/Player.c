@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 //inserting new player
 int PlayerEntry(PlayerPos head) {
 
@@ -22,8 +21,9 @@ int PlayerEntry(PlayerPos head) {
 	int PlayerDeath = 0;
 	char input = '\0';
 	int opened = 0;
-	char ch[MAX_LINE] = { 0 };;
+	char ch[MAX_LINE] = { 0 };
 	int cC = 0;
+	int cP = 0;
 	int i, j = 0;
 	FILE* dat = NULL;
 
@@ -37,7 +37,7 @@ int PlayerEntry(PlayerPos head) {
 		}
 	}
 
-	NewPlayer = CreatePlayer(name);
+	NewPlayer = CreatePlayer(name, &cP);
 	
 	if (!NewPlayer) {
 
@@ -55,7 +55,7 @@ int PlayerEntry(PlayerPos head) {
 		
 		InsertPlayerAfter(head, NewPlayer);
 		
-		NewPlayer->CharacterPoints = 10;
+		NewPlayer->CharacterPoints = 50;
 
 		if (opened == 0) {
 			dat = fopen("Game/Map.txt", "r");
@@ -98,7 +98,7 @@ int PlayerEntry(PlayerPos head) {
 
 		while (input != 'E') {
 			
-			//SystemClear();
+			SystemClear();
 
 			if (PlayerDeath != 1) {
 
@@ -114,7 +114,7 @@ int PlayerEntry(PlayerPos head) {
 					printf("\n\t Your stats: "DarkYellow"% d ", NewPlayer->CharacterPoints);
 					printf(DarkMagenta"\n\t %d/500", WinValue - NewPlayer->CharacterPoints);
 					printf(White" left to go.");
-					if (PlayerDeath == 1 || NewPlayer->CharacterPoints < 0) {
+					if (PlayerDeath == 1 || NewPlayer->CharacterPoints <= 0) {
 						printf(DarkRed"\n\t You had your brains splattered!\n\n"White);
 						dat = fopen("source\\Player\\Brain.txt", "r");
 						while (!feof(dat)) {
@@ -138,7 +138,6 @@ int PlayerEntry(PlayerPos head) {
 					}
 					printf("\n\t Type E to leave or enter your moves (up - w, down - s, left - a, right - d): ");
 					scanf(" %c", &input);
-
 					break;
 				}
 			}
@@ -156,14 +155,14 @@ int PlayerEntry(PlayerPos head) {
 	}
 	dat = fopen("source\\saves\\players.txt", "w");
 	for (game = head->next; game != NULL; game = game->next) {
-		fprintf(dat, " %s\n", game->name);
+		fprintf(dat, " %s %d\n", game->name, game->CharacterPoints);
 	}
 	fclose(dat);
 	return EXIT_SUCCESS;
 }
 
 //memory allocation for new player
-PlayerPos CreatePlayer(char* Name) {
+PlayerPos CreatePlayer(char* Name, int* CP) {
 
 	PlayerPos NewPlayer = NULL;
 
@@ -177,9 +176,9 @@ PlayerPos CreatePlayer(char* Name) {
 	else {
 		
 		strcpy(NewPlayer->name, Name);
+		NewPlayer->CharacterPoints = *CP;
 		NewPlayer->next = NULL;
 		return NewPlayer;
-	
 	}
 }
 
@@ -196,62 +195,174 @@ int InsertPlayerAfter(PlayerPos P, PlayerPos NewPlayer) {
 int PlayerList(PlayerPos head) {
 
 	PlayerPos game = head;
+	char empty = ' ';
 
-	printf("\n\t This is all of your saved games: \n\n");
+	printf(DarkGreen"\n\t This is all of your saved games: \n\n"DarkWhite);
 
-	if (!game) {
+	if (game->next == NULL) {
 
-		printf("\t <Empty>\n");
-		printf("\t===========================\n");
+		printf("\t Player name: <Empty>\n");
+		printf("\t==================================\n");
 		return EXIT_SUCCESS;
 	}
 	
 	for (game = head->next; game != NULL; game = game->next) {
 		
-		printf("\t Player name: %s", game->name);
+		printf("\t Player name: %s %10c level %d / 500", game->name, empty, game->CharacterPoints);
 		puts("\t");
 	}
-	printf("\t===========================\n");
+	printf("\t================================================\n"White);
 
 	return EXIT_SUCCESS;
 }
 
-//place selected player on top
-int Switch(PlayerPos head){
+int LoadPlayer(PlayerPos head) {
 
-	PlayerPos Prev = head;
-	PlayerPos Curr = NULL;
-	PlayerPos Foll = NULL;
+
+	PlayerPos game = head;
+	PlayerPos temp = NULL;
+	PlayerPos prev = NULL;
+	PlayerPos Player = NULL;
+	char ArrayMap[X][Y];
 	char name[MAX_PLAYER_NAME] = { 0 };
+	int PlayerDeath = 0;
+	char input = '\0';
+	char ch[MAX_LINE] = { 0 };
+	int opened = 1;
+	int cC = 0;
+	int cP = 0;
+	int found = 0;
+	int i, j = 0;
+	FILE* dat = NULL;
 
-	printf("\n\t Please type the name of your player: ");
-	scanf(" %s", &name);
+	printf("\n\t Please type the name of your player (10 characters max): ");
+	scanf(" %s", name);
+	
 
-	if (strcmp(Prev->next->name, name) == 0) {
-		printf("\n\t Successfully loaded progress of %s!\n", &name);
+	for (game = head->next; game != NULL; game = game->next) {
+		if (strcmp(game->name, name) == 0) {
+			printf(DarkGreen"\n\t Player found.\n\n"White);
+			Player = game;
+			Player->CharacterPoints = game->CharacterPoints;
+			found = 1;
+			break;
+		}
+	}
+
+	if (found != 1) {
+		printf(DarkRed"\n\t Player not found.\n\n"White);
 		return EXIT_SUCCESS;
 	}
 
-	for (Prev = head; Prev->next != NULL; Prev = Prev->next) {
+	dat = fopen(Player->name, "r");
 
+	puts("\n");
 
-		// No need to switch if only one player is saved
+	for (i = 0; i < X; i++) {
+		for (j = 0; j < Y; j++) {
+			fscanf(dat, " %c", &ArrayMap[i][j]);
 
-		if (strcmp(Prev->next->name, name) == 0) {
-			Curr = Prev->next;
-			Foll = Curr->next;
+			if (ArrayMap[i][j] == 'S')
+				printf(Green"    %c", ArrayMap[i][j]);
 
-			Curr->next = head->next;
-			head->next = Curr;
-			Prev->next = Foll;
+			else if (ArrayMap[i][j] == 'C')
+				printf(DarkBlue"    %c", ArrayMap[i][j]);
 
-			printf("\n\t Successfully loaded progress of %s!\n", &name);
-			return EXIT_SUCCESS;
+			else if (ArrayMap[i][j] == 'T')
+				printf(DarkCyan"    %c", ArrayMap[i][j]);
+
+			else if (ArrayMap[i][j] == 'L')
+				printf(DarkYellow"    %c", ArrayMap[i][j]);
+
+			else if (ArrayMap[i][j] == 'X')
+				printf(Green"    %c", ArrayMap[i][j]);
+
+			else if (ArrayMap[i][j] == 'P') {
+				printf(DarkRed"    %c", ArrayMap[i][j]);
+			}
+
+			else
+				printf(White"    %c", ArrayMap[i][j]);
+		}
+		puts("\n");
+	}
+	printf(White);
+	fclose(dat);
+
+	while (input != 'E') {
+
+		SystemClear();
+
+		if (PlayerDeath != 1) {
+
+			switch (input) {
+
+			case 'E':
+
+				break;
+
+			default:
+
+				PlayerDeath = ReadMap(&input, &opened, &Player->CharacterPoints, &cC, &Player->name);
+				printf("\n\t Your stats: "DarkYellow"% d ", Player->CharacterPoints);
+				printf(DarkMagenta"\n\t %d/500", WinValue - Player->CharacterPoints);
+				printf(White" left to go.");
+
+				if (PlayerDeath == 1 || Player->CharacterPoints <= 0) {
+					printf(DarkRed"\n\t You had your brains splattered!\n\n"White);
+					dat = fopen("source\\Player\\Brain.txt", "r");
+					while (!feof(dat)) {
+						fgets(ch, MAX_LINE, dat);
+						printf(Magenta" %s"White, ch);
+					}
+					fclose(dat);
+
+					remove(Player->name);
+					for (game = head; game->next != NULL; game = game->next) {
+						if (strcmp(game->next->name, Player->name) == 0) {
+							
+							temp = Player;
+							Player = Player->next;
+							game->next = Player;
+							free(temp);
+							break;
+						}
+					}
+
+					input = 'E';
+					break;
+				}
+
+				else if (Player->CharacterPoints >= WinValue) {
+					printf(DarkCyan"\n\t You won the game!"White);
+					input = 'E';
+					break;
+				}
+				printf("\n\t Type E to leave or enter your moves (up - w, down - s, left - a, right - d): ");
+				scanf(" %c", &input);
+				break;
+				
+				for (game = head; game->next != NULL; game = game->next) {
+					if (strcmp(game->name, Player->name) == 0) {
+						game->CharacterPoints = Player->CharacterPoints;
+					}
+				}
+			}
+		}
+
+		else {
+			input = 'E';
+			printf(DarkRed"\n\n\t YOU DIED\n\n"White);
 		}
 	}
+
 	
-	printf("\n\t Player you are searching for is not saved. Please create new game!\n");
-	
+	printf(Cyan"\n\n\t You are entering main menu!\n"White);
+
+	dat = fopen("source\\saves\\players.txt", "w");
+	for (game = head->next; game != NULL; game = game->next) {
+		fprintf(dat, " %s %d\n", game->name, game->CharacterPoints);
+	}
+	fclose(dat);
 	return EXIT_SUCCESS;
-			
 }

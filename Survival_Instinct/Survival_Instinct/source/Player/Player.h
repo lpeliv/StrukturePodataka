@@ -14,6 +14,6 @@ typedef struct _playerStruct {
 }PlayerStruct;
 
 int PlayerEntry(PlayerPos head);
-PlayerPos CreatePlayer(char* Name);
+PlayerPos CreatePlayer(char* Name, int* CP);
 int PlayerList(PlayerPos head);
-int Switch(PlayerPos head);
+int LoadPlayer(PlayerPos head);

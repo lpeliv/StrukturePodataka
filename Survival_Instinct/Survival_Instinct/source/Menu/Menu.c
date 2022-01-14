@@ -13,34 +13,42 @@ int Menu() {
 
 	char entry = '\0';
 	char confirmation = '\0';
-	PlayerStruct head = {.name = "\0", .next = NULL};
+	PlayerStruct head = {.name = "\0", .next = NULL, .CharacterPoints = 0};
 	PlayerPos P = &head;
 	FILE* dat = NULL;
 	FILE* MM = NULL;
 	PlayerPos NewPlayer = NULL;
+	char name[MAX_PLAYER_NAME] = { 0 };
 	int dead = 0;
 	char mm[MAX_LINE] = { 0 };
 
 	dat = fopen("source\\saves\\players.txt", "r");
 	if (dat) {
-		while (!feof(dat)) {
+		fseek(dat, 0, SEEK_END);
+		if (ftell(dat) != 0) {
+			fseek(dat, 0, SEEK_SET);
 
-			fscanf(dat, " %s\n", head.name);
-			NewPlayer = CreatePlayer(&head.name);
+			while (!feof(dat)) {
 
-			NewPlayer->next = P->next;
-			P->next = NewPlayer;
+				fscanf(dat, " %s %d\n", head.name, &head.CharacterPoints);
+				NewPlayer = CreatePlayer(&head.name, &head.CharacterPoints);
+
+				while (P->next != NULL)
+					P = P->next;
+				P->next = NewPlayer;
+				P = &head;
+			}
 		}
 	}
 
 	while (confirmation != 'Y') {
 
 		//Main Menu
-		//SystemClear();
+		SystemClear();
 		MM = fopen("source\\Menu\\MainMenu.txt", "r");
 		while (!feof(MM)) {
 			fgets(mm, MAX_LINE, MM);
-			printf(" %s", mm);
+			printf(DarkWhite" %s"White, mm);
 		}
 		fclose(MM);
 
@@ -54,43 +62,37 @@ int Menu() {
 		case 'A':
 			//Starting new game
 			dead = PlayerEntry(P);
-			if(dead == PLAYER_DIED)
-			//SystemClear();
+			SystemClear();
 			
 			break;
 		
 		case 'B':
-			//WIP
-			printf("\n\t Successfully loaded the game!\n");
+			if (P->next == NULL) {
+
+				printf(Red"\n\t There is no saved games! Please start new game.\n"White);
+				break;
+			}
+
+			dead = LoadPlayer(P);
+			SystemClear();
+
 			break;
 
 		case 'C':
 
-			//SystemClear();
+			SystemClear();
 			PlayerList(P);
 			break;
 
-		case 'D':
-			//WIP
-			// If no players are saved, skip this function
-			if (P->next == NULL) {
-
-				printf("\n\t There is no saved games! Please start new game.\n");
-				break;
-			}
-
-			Switch(P);
-			break;
-			
 		// Exit
-		case 'Z':
+		case 'E':
 
 			printf("\n\t Are you sure you want to leave the game? Type"DarkGreen"[Y]"White" for yes or "DarkRed"[N]"White" for no: ");
 			scanf(" %c", &confirmation);
 			while (confirmation != 'Y' || confirmation != 'N') {
 				if (confirmation == 'Y') {
 
-					printf("\n\t Thank you for playing the game. Goodbye!\n");
+					printf(DarkGreen"\n\t Thank you for playing the game. Goodbye!\n"White);
 					fclose(dat);
 					return EXIT_SUCCESS;
 				}
@@ -99,12 +101,12 @@ int Menu() {
 					break;
 
 				else
-					printf("\t You typed the wrong letter.\n");
+					printf(Red"\t You typed the wrong letter.\n"White);
 			}
 			break;
 
 		default:
-			printf("\t You typed the wrong letter.\n");
+			printf(Red"\t You typed the wrong letter.\n"White);
 			break;
 		}
 	}
@@ -117,8 +119,6 @@ int Menu() {
 int SystemClear() {
 
 	system("clear");
-	//remove later
-	system("pause > null");
 
 	return 0;
 }

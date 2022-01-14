@@ -16,3 +16,4 @@
 #define Cyan "\033[0;36m"
 #define DarkCyan "\033[1;36m"
 #define White "\033[0;37m"
+#define DarkWhite "\033[1;37m"
