@@ -1,5 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-
 #include "Map.h"
 #include "Menu/Menu.h"
 #include "Chest/Chest.h"

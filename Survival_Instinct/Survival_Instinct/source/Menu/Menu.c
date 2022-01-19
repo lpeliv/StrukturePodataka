@@ -1,6 +1,4 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
-
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include "Menu/Menu.h"
 #include "Player/Player.h"
@@ -76,7 +74,7 @@ int Menu() {
 			break;
 
 		case 'C':
-
+			SystemClear();
 			PlayerList(P);
 			break;
 

@@ -1,5 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-
 #include "Player/Player.h"
 #include "Map/Map.h"
 #include "Color.h"
