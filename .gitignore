@@ -7,3 +7,5 @@
 
 # Bin
 **/Debug/
+Survival_Instinct/bin/*
+!Survival_Instinct/vendor/bin/

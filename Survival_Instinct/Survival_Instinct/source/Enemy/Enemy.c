@@ -1,5 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-
 #include "Color.h"
 #include "Enemy.h"
 #include "Chest/Chest.h"
